@@ -1,0 +1,19 @@
+* swaylayout
+#+BEGIN_QUOTE
+Get the current Sway keyboard layout
+#+END_QUOTE
+
+** Installation
+#+BEGIN_SRC sh
+cargo install swaylayout
+#+END_SRC
+** Usage
+#+BEGIN_EXAMPLE
+$ swaylayout
+English (US)
+
+#+END_EXAMPLE
+** Contributing
+Unlikely, but appreciated.
+** License
+MIT, because who cares.
