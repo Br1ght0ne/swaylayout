@@ -1,3 +1,0 @@
-[submodule "external/swayipc-rs"]
-	path = external/swayipc-rs
-	url = https://github.com/JayceFayne/swayipc-rs

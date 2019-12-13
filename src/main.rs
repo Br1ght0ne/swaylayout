@@ -18,22 +18,23 @@ enum Error {
     SwayIPC(swayipc::Error),
     #[error("error in paw: {0}")]
     Paw(#[from] std::io::Error),
-    #[error("wrong input change event: {0:?}")]
-    WrongInputChange(InputChange),
+    #[error("wrong input change event")]
+    WrongInputChange,
     #[error("no active layout found")]
     LayoutNotFound,
 }
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
-fn new_layout_name(event: InputEvent) -> Result<String> {
+fn new_layout_name(event: &InputEvent) -> Result<&String> {
     if let InputChange::XkbLayout = event.change {
         event
             .input
             .xkb_active_layout_name
+            .as_ref()
             .ok_or(Error::LayoutNotFound)
     } else {
-        Err(Error::WrongInputChange(event.change))
+        Err(Error::WrongInputChange)
     }
 }
 
@@ -46,7 +47,7 @@ fn current_layout_name(conn: &mut Connection, identifier: &str) -> Result<String
         .ok_or(Error::LayoutNotFound)
 }
 
-fn input_events(conn: Connection) -> Result<impl Iterator<Item = InputEvent>> {
+fn input_events(conn: Connection) -> Result<impl Iterator<Item = Box<InputEvent>>> {
     conn.subscribe(&[EventType::Input])
         .map(|iter| {
             iter.filter_map(|event| match event {
@@ -65,7 +66,7 @@ fn main(args: Args) -> Result<()> {
     if args.listen {
         let events = input_events(conn)?.filter(|event| event.input.identifier == args.identifier);
         for event in events {
-            if let Ok(name) = new_layout_name(event) {
+            if let Ok(name) = new_layout_name(&event) {
                 println!("{}", name);
             }
         }
