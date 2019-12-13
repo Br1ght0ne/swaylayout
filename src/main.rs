@@ -1,4 +1,3 @@
-use serde::Serialize;
 use swayipc::{
     reply::{Event, InputChange, InputEvent},
     Connection, EventType,
@@ -21,8 +20,6 @@ enum Error {
     WrongInputChange(InputChange),
     #[error("no active layout found")]
     LayoutNotFound,
-    #[error("serialization to JSON failed (error: {0})")]
-    Serialization(#[from] serde_json::Error),
 }
 
 type Result<T, E = Error> = std::result::Result<T, E>;
@@ -49,18 +46,12 @@ fn input_events(conn: Connection) -> Result<impl Iterator<Item = InputEvent>> {
         .map_err(Error::SwayIPC)
 }
 
-#[derive(Debug, Serialize)]
-struct Output {
-    text: String,
-}
-
 #[paw::main]
 fn main(args: Args) -> Result<()> {
     let conn = Connection::new().map_err(Error::SwayIPC)?;
     for event in input_events(conn)?.filter(|event| event.input.identifier == args.identifier) {
         if let Ok(name) = new_layout_name(event) {
-            let output = serde_json::to_string(&Output { text: name });
-            println!("{}", output.map_err(Error::Serialization)?);
+            println!("{}", name);
         }
     }
     Ok(())

@@ -9,8 +9,6 @@ edition = "2018"
 
 [dependencies]
 paw = "1.0.0"
-serde = { version = "1.0.103", features = ["derive"] }
-serde_json = "1.0.44"
 structopt = { version = "0.3.5", features = ["paw"] }
 # TODO: features=["async"]
 swayipc = { path = "external/swayipc-rs" }
