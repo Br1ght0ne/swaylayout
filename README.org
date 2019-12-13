@@ -39,7 +39,7 @@ Plugging that into waybar =.config/waybar/config=:
         "custom/keyboard"
     ],
     "custom/keyboard": {
-        "exec": "swaylayout -i 1:1:AT_Translated_Set_2_keyboard"
+        "exec": "swaylayout 1:1:AT_Translated_Set_2_keyboard"
     }
 }
 #+END_SRC
