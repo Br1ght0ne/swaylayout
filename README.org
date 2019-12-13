@@ -7,13 +7,45 @@ Get the current Sway keyboard layout
 #+BEGIN_SRC sh
 cargo install swaylayout
 #+END_SRC
+
+** Prerequisites
+Get the identifier of your keyboard, e.g.
+
+#+BEGIN_EXAMPLE
+$ swaymsg -t get_inputs
+# ...
+Input device: AT Translated Set 2 keyboard
+  Type: Keyboard
+  Identifier: 1:1:AT_Translated_Set_2_keyboard
+  Product ID: 1
+  Vendor ID: 1
+  Active Keyboard Layout: English (US)
+  Libinput Send Events: enabled
+
+# here it's 1:1:AT_Translated_Set_2_keyboard
+#+END_EXAMPLE
+
 ** Usage
 #+BEGIN_EXAMPLE
 $ swaylayout
 English (US)
-
 #+END_EXAMPLE
+
+Plugging that into waybar =.config/waybar/config=:
+
+#+BEGIN_SRC json
+{
+    "modules-right": [
+        "custom/keyboard"
+    ],
+    "custom/keyboard": {
+        "exec": "swaylayout -i 1:1:AT_Translated_Set_2_keyboard"
+    }
+}
+#+END_SRC
+
 ** Contributing
 Unlikely, but appreciated.
+
 ** License
 MIT, because who cares.
