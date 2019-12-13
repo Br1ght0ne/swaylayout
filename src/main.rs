@@ -6,7 +6,6 @@ use swayipc::{
 #[derive(Debug, structopt::StructOpt)]
 struct Args {
     /// Input device identifier
-    #[structopt(short, long, env = "IDENTIFIER")]
     identifier: String,
 }
 
@@ -35,6 +34,15 @@ fn new_layout_name(event: InputEvent) -> Result<String> {
     }
 }
 
+fn current_layout_name(conn: &mut Connection, identifier: &str) -> Result<String> {
+    conn.get_inputs()
+        .map_err(Error::SwayIPC)?
+        .into_iter()
+        .find(|input| input.identifier == identifier)
+        .and_then(|input| input.xkb_active_layout_name)
+        .ok_or(Error::LayoutNotFound)
+}
+
 fn input_events(conn: Connection) -> Result<impl Iterator<Item = InputEvent>> {
     conn.subscribe(&[EventType::Input])
         .map(|iter| {
@@ -48,11 +56,15 @@ fn input_events(conn: Connection) -> Result<impl Iterator<Item = InputEvent>> {
 
 #[paw::main]
 fn main(args: Args) -> Result<()> {
-    let conn = Connection::new().map_err(Error::SwayIPC)?;
-    for event in input_events(conn)?.filter(|event| event.input.identifier == args.identifier) {
+    let mut conn = Connection::new().map_err(Error::SwayIPC)?;
+    println!("{}", current_layout_name(&mut conn, &args.identifier)?);
+
+    let events = input_events(conn)?.filter(|event| event.input.identifier == args.identifier);
+    for event in events {
         if let Ok(name) = new_layout_name(event) {
             println!("{}", name);
         }
     }
+
     Ok(())
 }
