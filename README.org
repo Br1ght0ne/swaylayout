@@ -27,8 +27,9 @@ Input device: AT Translated Set 2 keyboard
 
 ** Usage
 #+BEGIN_EXAMPLE
-$ swaylayout
+$ swaylayout 1:1:AT_Translated_Set_2_keyboard
 English (US)
+# prints the new layout on each change
 #+END_EXAMPLE
 
 Plugging that into waybar =.config/waybar/config=:
