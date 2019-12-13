@@ -7,6 +7,9 @@ use swayipc::{
 struct Args {
     /// Input device identifier
     identifier: String,
+    /// Listen to input change events and continuously output the new layout
+    #[structopt(short, long)]
+    listen: bool,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -59,10 +62,12 @@ fn main(args: Args) -> Result<()> {
     let mut conn = Connection::new().map_err(Error::SwayIPC)?;
     println!("{}", current_layout_name(&mut conn, &args.identifier)?);
 
-    let events = input_events(conn)?.filter(|event| event.input.identifier == args.identifier);
-    for event in events {
-        if let Ok(name) = new_layout_name(event) {
-            println!("{}", name);
+    if args.listen {
+        let events = input_events(conn)?.filter(|event| event.input.identifier == args.identifier);
+        for event in events {
+            if let Ok(name) = new_layout_name(event) {
+                println!("{}", name);
+            }
         }
     }
 

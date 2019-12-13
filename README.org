@@ -26,10 +26,17 @@ Input device: AT Translated Set 2 keyboard
 #+END_EXAMPLE
 
 ** Usage
+Just get the current layout:
+
 #+BEGIN_EXAMPLE
-$ swaylayout 1:1:AT_Translated_Set_2_keyboard
+$ swaylayout <ID>
 English (US)
-# prints the new layout on each change
+#+END_EXAMPLE
+
+Listen to layout changes and output new layout on every change:
+
+#+BEGIN_EXAMPLE
+$ swaylayout --listen <ID>
 #+END_EXAMPLE
 
 Plugging that into waybar =.config/waybar/config=:
@@ -40,7 +47,7 @@ Plugging that into waybar =.config/waybar/config=:
         "custom/keyboard"
     ],
     "custom/keyboard": {
-        "exec": "swaylayout 1:1:AT_Translated_Set_2_keyboard"
+        "exec": "swaylayout --listen <ID>"
     }
 }
 #+END_SRC
