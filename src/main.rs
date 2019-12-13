@@ -1,3 +1,4 @@
+use serde::Serialize;
 use swayipc::{
     reply::{Event, InputChange, InputEvent},
     Connection, EventType,
@@ -5,11 +6,8 @@ use swayipc::{
 
 #[derive(Debug, structopt::StructOpt)]
 struct Args {
-    /// Whether to print Waybar-compatible (streaming) output
-    #[structopt(short = "b", long)]
-    waybar: bool,
     /// Input device identifier
-    #[structopt(short, long, name = "IDENTIFIER", required_if("waybar", "true"))]
+    #[structopt(short, long, env = "IDENTIFIER")]
     identifier: String,
 }
 
@@ -23,6 +21,8 @@ enum Error {
     WrongInputChange(InputChange),
     #[error("no active layout found")]
     LayoutNotFound,
+    #[error("serialization to JSON failed (error: {0})")]
+    Serialization(#[from] serde_json::Error),
 }
 
 type Result<T, E = Error> = std::result::Result<T, E>;
@@ -49,17 +49,19 @@ fn input_events(conn: Connection) -> Result<impl Iterator<Item = InputEvent>> {
         .map_err(Error::SwayIPC)
 }
 
+#[derive(Debug, Serialize)]
+struct Output {
+    text: String,
+}
+
 #[paw::main]
 fn main(args: Args) -> Result<()> {
     let conn = Connection::new().map_err(Error::SwayIPC)?;
-    if args.waybar {
-        for event in input_events(conn)?.filter(|event| event.input.identifier == args.identifier) {
-            if let Ok(name) = new_layout_name(event) {
-                println!("{}", name);
-            }
+    for event in input_events(conn)?.filter(|event| event.input.identifier == args.identifier) {
+        if let Ok(name) = new_layout_name(event) {
+            let output = serde_json::to_string(&Output { text: name });
+            println!("{}", output.map_err(Error::Serialization)?);
         }
-        Ok(())
-    } else {
-        unimplemented!("default impl")
     }
+    Ok(())
 }
