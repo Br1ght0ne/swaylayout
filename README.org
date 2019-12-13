@@ -1,14 +1,24 @@
-* swaylayout
+#+TITLE: swaylayout
+
 #+BEGIN_QUOTE
 Get the current Sway keyboard layout
 #+END_QUOTE
 
-** Installation
+* Table of contents :TOC_2:
+- [[#installation][Installation]]
+- [[#prerequisites][Prerequisites]]
+- [[#usage][Usage]]
+- [[#raison-dêtre][Raison d'être]]
+- [[#contributing][Contributing]]
+- [[#license][License]]
+
+* Installation
+For now:
 #+BEGIN_SRC sh
-cargo install swaylayout
+cargo install --git https://github.com/filalex77/swaylayout
 #+END_SRC
 
-** Prerequisites
+* Prerequisites
 Get the identifier of your keyboard, e.g.
 
 #+BEGIN_EXAMPLE
@@ -25,7 +35,7 @@ Input device: AT Translated Set 2 keyboard
 # here it's 1:1:AT_Translated_Set_2_keyboard
 #+END_EXAMPLE
 
-** Usage
+* Usage
 Just get the current layout:
 
 #+BEGIN_EXAMPLE
@@ -52,8 +62,18 @@ Plugging that into waybar =.config/waybar/config=:
 }
 #+END_SRC
 
-** Contributing
+* Raison d'être
+This unscientific benchmark:
+
+| Command                  | Mean [ms]  | Min [ms] | Max [ms] | Relative      |
+|--------------------------+------------+----------+----------+---------------|
+| =swaylayout=             | 0.5 ± 0.2  |      0.4 |      1.7 | 1.00          |
+| pipe =swaymsg= into =jq= | 28.8 ± 2.1 |     26.6 |     35.9 | 52.85 ± 15.14 |
+
+e.g. 36-68x times faster than the naive solution
+
+* Contributing
 Unlikely, but appreciated.
 
-** License
+* License
 MIT, because who cares.
